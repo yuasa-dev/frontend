@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { nanoid } from 'nanoid'
+import { apiUrl } from '../config/api'
 
 interface Horse {
   id: number
@@ -79,7 +80,7 @@ export default function RacePage() {
 
   const fetchRace = async () => {
     try {
-      const res = await fetch(`/api/races/${id}`, {
+      const res = await fetch(apiUrl(`/api/races/${id}`), {
         headers: { 'X-Token': token },
       })
       if (!res.ok) {
@@ -124,7 +125,7 @@ export default function RacePage() {
 
     setIsSubmitting(true)
     try {
-      const res = await fetch(`/api/races/${id}/predictions`, {
+      const res = await fetch(apiUrl(`/api/races/${id}/predictions`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +199,7 @@ export default function RacePage() {
 
     setIsUpdating(true)
     try {
-      const res = await fetch(`/api/races/${id}`, {
+      const res = await fetch(apiUrl(`/api/races/${id}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

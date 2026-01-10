@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { apiUrl } from '../config/api'
 
 const VENUES = [
   '東京', '中山', '阪神', '京都', '中京', '小倉', '新潟', '福島', '札幌', '函館'
@@ -53,7 +54,7 @@ export default function CreateRace() {
 
     setIsSubmitting(true)
     try {
-      const res = await fetch('/api/races', {
+      const res = await fetch(apiUrl('/api/races'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
