@@ -36,6 +36,7 @@ interface PredictionTableProps {
   }
   onMarkChange: (horseNumber: number, mark: MarkType) => void
   onBuyToggle: (horseNumber: number) => void
+  onBuyChange: (horseNumber: number, buyType: BuyType) => void
 }
 
 export default function PredictionTable({
@@ -44,6 +45,7 @@ export default function PredictionTable({
   myPrediction,
   onMarkChange,
   onBuyToggle,
+  onBuyChange,
 }: PredictionTableProps) {
   const [selectedHorse, setSelectedHorse] = useState<Horse | null>(null)
 
@@ -84,7 +86,12 @@ export default function PredictionTable({
   const handleMarkSelect = (mark: MarkType) => {
     if (selectedHorse) {
       onMarkChange(selectedHorse.number, mark)
-      setSelectedHorse(null)
+    }
+  }
+
+  const handleBuySelect = (buyType: BuyType) => {
+    if (selectedHorse) {
+      onBuyChange(selectedHorse.number, buyType)
     }
   }
 
@@ -162,7 +169,9 @@ export default function PredictionTable({
           horseNumber={selectedHorse.number}
           horseName={selectedHorse.name}
           currentMark={getMyMark(selectedHorse.number)}
+          currentBuyType={getMyBuyType(selectedHorse.number)}
           onSelect={handleMarkSelect}
+          onBuySelect={handleBuySelect}
           onClose={() => setSelectedHorse(null)}
         />
       )}

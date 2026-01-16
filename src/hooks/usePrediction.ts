@@ -177,6 +177,28 @@ export function usePrediction(raceId: string, groupId: string | null) {
     setIsDirty(true)
   }
 
+  // 軸・抑えを直接設定
+  type BuyType = 'jiku' | 'osae' | null
+  const handleBuyChange = (horseNumber: number, buyType: BuyType) => {
+    setMyPrediction((prev) => {
+      const newPrediction = { ...prev }
+
+      // まず該当馬番を両方から削除
+      newPrediction.jiku = prev.jiku.filter((n) => n !== horseNumber)
+      newPrediction.osae = prev.osae.filter((n) => n !== horseNumber)
+
+      // 新しい状態を設定
+      if (buyType === 'jiku') {
+        newPrediction.jiku = [...newPrediction.jiku, horseNumber]
+      } else if (buyType === 'osae') {
+        newPrediction.osae = [...newPrediction.osae, horseNumber]
+      }
+
+      return newPrediction
+    })
+    setIsDirty(true)
+  }
+
   const savePrediction = async () => {
     setIsSaving(true)
     setError(null)
@@ -219,6 +241,7 @@ export function usePrediction(raceId: string, groupId: string | null) {
     isDirty,
     handleMarkChange,
     handleBuyToggle,
+    handleBuyChange,
     savePrediction,
     refetch: fetchPredictions,
   }

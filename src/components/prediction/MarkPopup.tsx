@@ -1,21 +1,26 @@
 import { useEffect, useRef } from 'react'
-import { type MarkType, MARK_CONFIG } from './MarkCell'
+import { type MarkType, type BuyType, MARK_CONFIG, BUY_CONFIG } from './MarkCell'
 
 interface MarkPopupProps {
   horseNumber: number
   horseName: string
   currentMark: MarkType
+  currentBuyType: BuyType
   onSelect: (mark: MarkType) => void
+  onBuySelect: (buyType: BuyType) => void
   onClose: () => void
 }
 
 const MARK_TYPES: MarkType[] = ['honmei', 'taikou', 'tanana', 'renka', 'ana']
+const BUY_TYPES: BuyType[] = ['jiku', 'osae']
 
 export default function MarkPopup({
   horseNumber,
   horseName,
   currentMark,
+  currentBuyType,
   onSelect,
+  onBuySelect,
   onClose,
 }: MarkPopupProps) {
   const ref = useRef<HTMLDivElement>(null)
@@ -85,6 +90,52 @@ export default function MarkPopup({
             </span>
             <span className="text-xs text-gray-600">解除</span>
           </button>
+        </div>
+
+        {/* 軸・抑えセクション */}
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="text-sm text-gray-500 text-center mb-3">買い目チェック</div>
+          <div className="grid grid-cols-3 gap-3">
+            {BUY_TYPES.map((buyType) => {
+              if (!buyType) return null
+              const config = BUY_CONFIG[buyType]
+              const isSelected = currentBuyType === buyType
+
+              return (
+                <button
+                  key={buyType}
+                  onClick={() => onBuySelect(isSelected ? null : buyType)}
+                  className={`
+                    py-3 rounded-lg flex flex-col items-center gap-1
+                    transition-colors border-2
+                    ${isSelected
+                      ? `${config.bgColor} border-current ${config.color}`
+                      : 'border-gray-200 hover:border-gray-300'
+                    }
+                  `}
+                >
+                  <span className={`text-lg font-bold ${config.color}`}>
+                    ✓
+                  </span>
+                  <span className="text-xs text-gray-600">
+                    {buyType === 'jiku' ? '軸として買い' : '抑えで買い'}
+                  </span>
+                </button>
+              )
+            })}
+            <button
+              onClick={() => onBuySelect(null)}
+              className={`
+                py-3 rounded-lg flex flex-col items-center gap-1
+                transition-colors border-2 border-gray-200 hover:border-gray-300
+              `}
+            >
+              <span className="text-lg font-bold text-gray-400">
+                ー
+              </span>
+              <span className="text-xs text-gray-600">買わない</span>
+            </button>
+          </div>
         </div>
 
         <button
