@@ -86,19 +86,25 @@ export function usePrediction(raceId: string, groupId: string | null) {
       const data = await res.json()
       setRace(data.race)
       setHorses(data.horses)
-      setPredictions(data.predictions)
+      // jiku, osaeがない場合のデフォルト値を設定
+      const predictionsWithDefaults = data.predictions.map((p: Prediction) => ({
+        ...p,
+        jiku: p.jiku ?? [],
+        osae: p.osae ?? [],
+      }))
+      setPredictions(predictionsWithDefaults)
 
       // 自分の予想を初期化
-      const mine = data.predictions.find((p: Prediction) => p.isMine)
+      const mine = predictionsWithDefaults.find((p: Prediction) => p.isMine)
       if (mine) {
         setMyPrediction({
           honmei: mine.honmei,
           taikou: mine.taikou,
           tanana: mine.tanana,
-          renka: mine.renka,
-          ana: mine.ana,
-          jiku: mine.jiku,
-          osae: mine.osae,
+          renka: mine.renka ?? [],
+          ana: mine.ana ?? [],
+          jiku: mine.jiku ?? [],
+          osae: mine.osae ?? [],
         })
       } else {
         setMyPrediction({
