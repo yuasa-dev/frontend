@@ -24,6 +24,7 @@ export default function PredictionPage() {
     error,
     isDirty,
     handleMarkChange,
+    handleBuyToggle,
     savePrediction,
   } = usePrediction(id || '', groupId)
 
@@ -105,6 +106,7 @@ export default function PredictionPage() {
             predictions={predictions}
             myPrediction={myPrediction}
             onMarkChange={handleMarkChange}
+            onBuyToggle={handleBuyToggle}
           />
         </div>
 

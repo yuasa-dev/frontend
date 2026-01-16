@@ -32,6 +32,8 @@ interface Prediction {
   tanana: number | null
   renka: number[]
   ana: number[]
+  jiku: number[]
+  osae: number[]
   comment: string | null
 }
 
@@ -41,6 +43,8 @@ interface MyPrediction {
   tanana: number | null
   renka: number[]
   ana: number[]
+  jiku: number[]
+  osae: number[]
 }
 
 export function usePrediction(raceId: string, groupId: string | null) {
@@ -54,6 +58,8 @@ export function usePrediction(raceId: string, groupId: string | null) {
     tanana: null,
     renka: [],
     ana: [],
+    jiku: [],
+    osae: [],
   })
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -91,6 +97,8 @@ export function usePrediction(raceId: string, groupId: string | null) {
           tanana: mine.tanana,
           renka: mine.renka,
           ana: mine.ana,
+          jiku: mine.jiku,
+          osae: mine.osae,
         })
       } else {
         setMyPrediction({
@@ -99,6 +107,8 @@ export function usePrediction(raceId: string, groupId: string | null) {
           tanana: null,
           renka: [],
           ana: [],
+          jiku: [],
+          osae: [],
         })
       }
       setIsDirty(false)
@@ -135,6 +145,31 @@ export function usePrediction(raceId: string, groupId: string | null) {
         newPrediction.renka = [...newPrediction.renka, horseNumber]
       } else if (mark === 'ana') {
         newPrediction.ana = [...newPrediction.ana, horseNumber]
+      }
+
+      return newPrediction
+    })
+    setIsDirty(true)
+  }
+
+  // 軸・抑えのトグル（軸→抑え→なし→軸...）
+  const handleBuyToggle = (horseNumber: number) => {
+    setMyPrediction((prev) => {
+      const newPrediction = { ...prev }
+      const isJiku = prev.jiku.includes(horseNumber)
+      const isOsae = prev.osae.includes(horseNumber)
+
+      // 現在の状態から次の状態へ遷移
+      if (isJiku) {
+        // 軸 → 抑え
+        newPrediction.jiku = prev.jiku.filter((n) => n !== horseNumber)
+        newPrediction.osae = [...prev.osae, horseNumber]
+      } else if (isOsae) {
+        // 抑え → なし
+        newPrediction.osae = prev.osae.filter((n) => n !== horseNumber)
+      } else {
+        // なし → 軸
+        newPrediction.jiku = [...prev.jiku, horseNumber]
       }
 
       return newPrediction
@@ -183,6 +218,7 @@ export function usePrediction(raceId: string, groupId: string | null) {
     error,
     isDirty,
     handleMarkChange,
+    handleBuyToggle,
     savePrediction,
     refetch: fetchPredictions,
   }

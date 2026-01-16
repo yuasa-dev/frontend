@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import MarkCell, { type MarkType } from './MarkCell'
+import MarkCell, { type MarkType, type BuyType } from './MarkCell'
 import MarkPopup from './MarkPopup'
 
 interface Horse {
@@ -18,6 +18,8 @@ interface Prediction {
   tanana: number | null
   renka: number[]
   ana: number[]
+  jiku: number[]
+  osae: number[]
 }
 
 interface PredictionTableProps {
@@ -29,8 +31,11 @@ interface PredictionTableProps {
     tanana: number | null
     renka: number[]
     ana: number[]
+    jiku: number[]
+    osae: number[]
   }
   onMarkChange: (horseNumber: number, mark: MarkType) => void
+  onBuyToggle: (horseNumber: number) => void
 }
 
 export default function PredictionTable({
@@ -38,6 +43,7 @@ export default function PredictionTable({
   predictions,
   myPrediction,
   onMarkChange,
+  onBuyToggle,
 }: PredictionTableProps) {
   const [selectedHorse, setSelectedHorse] = useState<Horse | null>(null)
 
@@ -51,6 +57,13 @@ export default function PredictionTable({
     return null
   }
 
+  // 自分の買い情報から馬番→買いタイプのマッピングを作成
+  const getMyBuyType = (horseNumber: number): BuyType => {
+    if (myPrediction.jiku.includes(horseNumber)) return 'jiku'
+    if (myPrediction.osae.includes(horseNumber)) return 'osae'
+    return null
+  }
+
   // 他者の予想から馬番→印のマッピングを作成
   const getOtherMark = (prediction: Prediction, horseNumber: number): MarkType => {
     if (prediction.honmei === horseNumber) return 'honmei'
@@ -58,6 +71,13 @@ export default function PredictionTable({
     if (prediction.tanana === horseNumber) return 'tanana'
     if (prediction.renka.includes(horseNumber)) return 'renka'
     if (prediction.ana.includes(horseNumber)) return 'ana'
+    return null
+  }
+
+  // 他者の買い情報から馬番→買いタイプのマッピングを作成
+  const getOtherBuyType = (prediction: Prediction, horseNumber: number): BuyType => {
+    if (prediction.jiku.includes(horseNumber)) return 'jiku'
+    if (prediction.osae.includes(horseNumber)) return 'osae'
     return null
   }
 
@@ -117,14 +137,19 @@ export default function PredictionTable({
               <td className="px-1 py-1 bg-blue-50/30 border-r">
                 <MarkCell
                   mark={getMyMark(horse.number)}
+                  buyType={getMyBuyType(horse.number)}
                   isEditable={!horse.scratched}
                   isHighlighted
                   onClick={() => !horse.scratched && setSelectedHorse(horse)}
+                  onBuyToggle={() => !horse.scratched && onBuyToggle(horse.number)}
                 />
               </td>
               {otherPredictions.map((p) => (
                 <td key={p.userId} className="px-1 py-1 border-r">
-                  <MarkCell mark={getOtherMark(p, horse.number)} />
+                  <MarkCell
+                    mark={getOtherMark(p, horse.number)}
+                    buyType={getOtherBuyType(p, horse.number)}
+                  />
                 </td>
               ))}
             </tr>
