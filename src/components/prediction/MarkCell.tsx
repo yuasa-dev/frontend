@@ -27,7 +27,7 @@ export default function MarkCell({ mark, buyType, isEditable, onClick, onBuyTogg
   const config = mark ? MARK_CONFIG[mark] : null
   const buyConfig = buyType ? BUY_CONFIG[buyType] : null
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     if (onClick) {
       onClick()
     }
