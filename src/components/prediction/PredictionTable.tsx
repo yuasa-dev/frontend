@@ -141,7 +141,7 @@ export default function PredictionTable({
                   <div className="text-xs text-gray-500">{horse.jockeyName}</div>
                 )}
               </td>
-              <td className="px-1 py-1 bg-blue-50/30 border-r">
+              <td className="px-1 py-1 bg-blue-50/30 border-r overflow-visible">
                 <MarkCell
                   mark={getMyMark(horse.number)}
                   buyType={getMyBuyType(horse.number)}
@@ -152,7 +152,7 @@ export default function PredictionTable({
                 />
               </td>
               {otherPredictions.map((p) => (
-                <td key={p.userId} className="px-1 py-1 border-r">
+                <td key={p.userId} className="px-1 py-1 border-r overflow-visible">
                   <MarkCell
                     mark={getOtherMark(p, horse.number)}
                     buyType={getOtherBuyType(p, horse.number)}
