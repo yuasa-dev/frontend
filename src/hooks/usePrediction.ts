@@ -4,6 +4,7 @@ import { apiUrl } from '../config/api'
 import { type MarkType } from '../components/prediction/MarkCell'
 
 interface Horse {
+  id: number  // 馬ID（予想の紐づけに使用）
   number: number
   name: string
   jockeyName: string | null
@@ -23,28 +24,29 @@ interface RaceInfo {
   status: string
 }
 
+// 予想は馬ID（ExternalHorse.id）で管理
 interface Prediction {
   userId: string
   nickname: string
   isMine: boolean
-  honmei: number | null
-  taikou: number | null
-  tanana: number | null
-  renka: number[]
-  ana: number[]
-  jiku: number[]
-  osae: number[]
+  honmei: number | null  // 馬ID
+  taikou: number | null  // 馬ID
+  tanana: number | null  // 馬ID
+  renka: number[]        // 馬IDの配列
+  ana: number[]          // 馬IDの配列
+  jiku: number[]         // 馬IDの配列
+  osae: number[]         // 馬IDの配列
   comment: string | null
 }
 
 interface MyPrediction {
-  honmei: number | null
-  taikou: number | null
-  tanana: number | null
-  renka: number[]
-  ana: number[]
-  jiku: number[]
-  osae: number[]
+  honmei: number | null  // 馬ID
+  taikou: number | null  // 馬ID
+  tanana: number | null  // 馬ID
+  renka: number[]        // 馬IDの配列
+  ana: number[]          // 馬IDの配列
+  jiku: number[]         // 馬IDの配列
+  osae: number[]         // 馬IDの配列
 }
 
 export function usePrediction(raceId: string, groupId: string | null) {
@@ -137,28 +139,29 @@ export function usePrediction(raceId: string, groupId: string | null) {
     fetchPredictions()
   }, [fetchPredictions])
 
-  const handleMarkChange = (horseNumber: number, mark: MarkType) => {
+  // 馬IDベースで印を変更
+  const handleMarkChange = (horseId: number, mark: MarkType) => {
     setMyPrediction((prev) => {
       const newPrediction = { ...prev }
 
-      // まず該当馬番を全ての印から削除
-      if (prev.honmei === horseNumber) newPrediction.honmei = null
-      if (prev.taikou === horseNumber) newPrediction.taikou = null
-      if (prev.tanana === horseNumber) newPrediction.tanana = null
-      newPrediction.renka = prev.renka.filter((n) => n !== horseNumber)
-      newPrediction.ana = prev.ana.filter((n) => n !== horseNumber)
+      // まず該当馬IDを全ての印から削除
+      if (prev.honmei === horseId) newPrediction.honmei = null
+      if (prev.taikou === horseId) newPrediction.taikou = null
+      if (prev.tanana === horseId) newPrediction.tanana = null
+      newPrediction.renka = prev.renka.filter((id) => id !== horseId)
+      newPrediction.ana = prev.ana.filter((id) => id !== horseId)
 
       // 新しい印を設定
       if (mark === 'honmei') {
-        newPrediction.honmei = horseNumber
+        newPrediction.honmei = horseId
       } else if (mark === 'taikou') {
-        newPrediction.taikou = horseNumber
+        newPrediction.taikou = horseId
       } else if (mark === 'tanana') {
-        newPrediction.tanana = horseNumber
+        newPrediction.tanana = horseId
       } else if (mark === 'renka') {
-        newPrediction.renka = [...newPrediction.renka, horseNumber]
+        newPrediction.renka = [...newPrediction.renka, horseId]
       } else if (mark === 'ana') {
-        newPrediction.ana = [...newPrediction.ana, horseNumber]
+        newPrediction.ana = [...newPrediction.ana, horseId]
       }
 
       return newPrediction
@@ -166,24 +169,24 @@ export function usePrediction(raceId: string, groupId: string | null) {
     setIsDirty(true)
   }
 
-  // 軸・抑えのトグル（軸→抑え→なし→軸...）
-  const handleBuyToggle = (horseNumber: number) => {
+  // 軸・抑えのトグル（軸→抑え→なし→軸...）馬IDベース
+  const handleBuyToggle = (horseId: number) => {
     setMyPrediction((prev) => {
       const newPrediction = { ...prev }
-      const isJiku = prev.jiku.includes(horseNumber)
-      const isOsae = prev.osae.includes(horseNumber)
+      const isJiku = prev.jiku.includes(horseId)
+      const isOsae = prev.osae.includes(horseId)
 
       // 現在の状態から次の状態へ遷移
       if (isJiku) {
         // 軸 → 抑え
-        newPrediction.jiku = prev.jiku.filter((n) => n !== horseNumber)
-        newPrediction.osae = [...prev.osae, horseNumber]
+        newPrediction.jiku = prev.jiku.filter((id) => id !== horseId)
+        newPrediction.osae = [...prev.osae, horseId]
       } else if (isOsae) {
         // 抑え → なし
-        newPrediction.osae = prev.osae.filter((n) => n !== horseNumber)
+        newPrediction.osae = prev.osae.filter((id) => id !== horseId)
       } else {
         // なし → 軸
-        newPrediction.jiku = [...prev.jiku, horseNumber]
+        newPrediction.jiku = [...prev.jiku, horseId]
       }
 
       return newPrediction
@@ -191,21 +194,21 @@ export function usePrediction(raceId: string, groupId: string | null) {
     setIsDirty(true)
   }
 
-  // 軸・抑えを直接設定
+  // 軸・抑えを直接設定（馬IDベース）
   type BuyType = 'jiku' | 'osae' | null
-  const handleBuyChange = (horseNumber: number, buyType: BuyType) => {
+  const handleBuyChange = (horseId: number, buyType: BuyType) => {
     setMyPrediction((prev) => {
       const newPrediction = { ...prev }
 
-      // まず該当馬番を両方から削除
-      newPrediction.jiku = prev.jiku.filter((n) => n !== horseNumber)
-      newPrediction.osae = prev.osae.filter((n) => n !== horseNumber)
+      // まず該当馬IDを両方から削除
+      newPrediction.jiku = prev.jiku.filter((id) => id !== horseId)
+      newPrediction.osae = prev.osae.filter((id) => id !== horseId)
 
       // 新しい状態を設定
       if (buyType === 'jiku') {
-        newPrediction.jiku = [...newPrediction.jiku, horseNumber]
+        newPrediction.jiku = [...newPrediction.jiku, horseId]
       } else if (buyType === 'osae') {
-        newPrediction.osae = [...newPrediction.osae, horseNumber]
+        newPrediction.osae = [...newPrediction.osae, horseId]
       }
 
       return newPrediction
