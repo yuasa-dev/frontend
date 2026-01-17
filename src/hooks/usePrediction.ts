@@ -87,10 +87,10 @@ export function usePrediction(raceId: string, groupId: string | null) {
       // デバッグ: APIレスポンスの内容を確認
       console.log('=== Fetch Predictions Debug ===')
       console.log('predictions:', data.predictions)
-      const mine = data.predictions?.find((p: Prediction) => p.isMine)
-      console.log('mine:', mine)
-      console.log('mine.jiku:', mine?.jiku)
-      console.log('mine.osae:', mine?.osae)
+      const debugMine = data.predictions?.find((p: Prediction) => p.isMine)
+      console.log('mine:', debugMine)
+      console.log('mine.jiku:', debugMine?.jiku)
+      console.log('mine.osae:', debugMine?.osae)
 
       setRace(data.race)
       setHorses(data.horses)
