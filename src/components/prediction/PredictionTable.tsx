@@ -170,8 +170,8 @@ export default function PredictionTable({
         <MarkPopup
           horseNumber={selectedHorse.number}
           horseName={selectedHorse.name}
-          currentMark={getMyMark(selectedHorse.number)}
-          currentBuyType={getMyBuyType(selectedHorse.number)}
+          currentMark={getMyMark(selectedHorse.id)}
+          currentBuyType={getMyBuyType(selectedHorse.id)}
           onSelect={handleMarkSelect}
           onBuySelect={handleBuySelect}
           onClose={() => setSelectedHorse(null)}
