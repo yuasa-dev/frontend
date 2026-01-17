@@ -3,6 +3,7 @@ import Header from '../components/common/Header'
 import DatePicker from '../components/common/DatePicker'
 import GroupSelector from '../components/common/GroupSelector'
 import RaceGrid from '../components/race/RaceGrid'
+import RefreshButton from '../components/race/RefreshButton'
 import { useRaces } from '../hooks/useRaces'
 import { useGroups } from '../hooks/useGroups'
 
@@ -42,34 +43,20 @@ export default function RaceListPage() {
           </div>
         )}
 
-        <RaceGrid
-          venues={venues}
-          isLoading={isLoading}
-          isEmpty={venues.length === 0}
+        {/* 更新ボタン（レース一覧の上に配置） */}
+        <RefreshButton
           onRefresh={fetchRaceData}
           isRefreshing={isFetching}
           canRefresh={fetchStatus.canFetch}
           remainingSeconds={remainingSeconds}
+          isEmpty={!isLoading && venues.length === 0}
         />
 
-        {!isLoading && venues.length === 0 && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={fetchRaceData}
-              disabled={!fetchStatus.canFetch || isFetching}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                fetchStatus.canFetch && !isFetching
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              {isFetching ? 'レース情報を取得中...' : 'レース情報を取得'}
-            </button>
-            <p className="mt-2 text-xs text-gray-500">
-              netkeibaからレース情報をスクレイピングします
-            </p>
-          </div>
-        )}
+        <RaceGrid
+          venues={venues}
+          isLoading={isLoading}
+          isEmpty={venues.length === 0}
+        />
       </main>
 
       <GroupSelector

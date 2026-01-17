@@ -20,20 +20,12 @@ interface RaceGridProps {
   venues: Venue[]
   isLoading?: boolean
   isEmpty?: boolean
-  onRefresh?: () => void
-  isRefreshing?: boolean
-  canRefresh?: boolean
-  remainingSeconds?: number
 }
 
 export default function RaceGrid({
   venues,
   isLoading,
   isEmpty,
-  onRefresh,
-  isRefreshing = false,
-  canRefresh = true,
-  remainingSeconds = 0,
 }: RaceGridProps) {
   if (isLoading) {
     return (
@@ -67,16 +59,11 @@ export default function RaceGrid({
 
   return (
     <div className="space-y-4">
-      {venues.map((venue, index) => (
+      {venues.map((venue) => (
         <VenueSection
           key={venue.venue}
           venue={venue.venue}
           races={venue.races}
-          showRefreshButton={index === 0}
-          onRefresh={onRefresh}
-          isRefreshing={isRefreshing}
-          canRefresh={canRefresh}
-          remainingSeconds={remainingSeconds}
         />
       ))}
     </div>
