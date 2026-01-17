@@ -20,9 +20,21 @@ interface RaceGridProps {
   venues: Venue[]
   isLoading?: boolean
   isEmpty?: boolean
+  onRefresh?: () => void
+  isRefreshing?: boolean
+  canRefresh?: boolean
+  remainingSeconds?: number
 }
 
-export default function RaceGrid({ venues, isLoading, isEmpty }: RaceGridProps) {
+export default function RaceGrid({
+  venues,
+  isLoading,
+  isEmpty,
+  onRefresh,
+  isRefreshing = false,
+  canRefresh = true,
+  remainingSeconds = 0,
+}: RaceGridProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
@@ -55,8 +67,17 @@ export default function RaceGrid({ venues, isLoading, isEmpty }: RaceGridProps) 
 
   return (
     <div className="space-y-4">
-      {venues.map((venue) => (
-        <VenueSection key={venue.venue} venue={venue.venue} races={venue.races} />
+      {venues.map((venue, index) => (
+        <VenueSection
+          key={venue.venue}
+          venue={venue.venue}
+          races={venue.races}
+          showRefreshButton={index === 0}
+          onRefresh={onRefresh}
+          isRefreshing={isRefreshing}
+          canRefresh={canRefresh}
+          remainingSeconds={remainingSeconds}
+        />
       ))}
     </div>
   )

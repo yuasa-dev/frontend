@@ -12,7 +12,15 @@ export default function RaceListPage() {
   const [showGroupSelector, setShowGroupSelector] = useState(false)
 
   const { groups } = useGroups()
-  const { venues, isLoading, error, fetchRaceData } = useRaces(selectedDate, selectedGroupId)
+  const {
+    venues,
+    isLoading,
+    isFetching,
+    error,
+    fetchRaceData,
+    fetchStatus,
+    remainingSeconds,
+  } = useRaces(selectedDate, selectedGroupId)
 
   const selectedGroup = selectedGroupId
     ? groups.find((g) => g.id === selectedGroupId)
@@ -34,15 +42,28 @@ export default function RaceListPage() {
           </div>
         )}
 
-        <RaceGrid venues={venues} isLoading={isLoading} isEmpty={venues.length === 0} />
+        <RaceGrid
+          venues={venues}
+          isLoading={isLoading}
+          isEmpty={venues.length === 0}
+          onRefresh={fetchRaceData}
+          isRefreshing={isFetching}
+          canRefresh={fetchStatus.canFetch}
+          remainingSeconds={remainingSeconds}
+        />
 
         {!isLoading && venues.length === 0 && (
           <div className="mt-4 text-center">
             <button
               onClick={fetchRaceData}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
+              disabled={!fetchStatus.canFetch || isFetching}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                fetchStatus.canFetch && !isFetching
+                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
             >
-              レース情報を取得
+              {isFetching ? 'レース情報を取得中...' : 'レース情報を取得'}
             </button>
             <p className="mt-2 text-xs text-gray-500">
               netkeibaからレース情報をスクレイピングします
