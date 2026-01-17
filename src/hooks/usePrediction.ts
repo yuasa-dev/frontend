@@ -72,8 +72,8 @@ export function usePrediction(raceId: string, groupId: string | null) {
 
     try {
       const url = groupId
-        ? `/api/external-races/${raceId}/predictions?groupId=${groupId}`
-        : `/api/external-races/${raceId}/predictions`
+        ? `/api/races/${raceId}/predictions?groupId=${groupId}`
+        : `/api/races/${raceId}/predictions`
 
       const res = await fetch(apiUrl(url), {
         headers: { 'X-Token': token },
@@ -84,6 +84,14 @@ export function usePrediction(raceId: string, groupId: string | null) {
       }
 
       const data = await res.json()
+      // デバッグ: APIレスポンスの内容を確認
+      console.log('=== Fetch Predictions Debug ===')
+      console.log('predictions:', data.predictions)
+      const mine = data.predictions?.find((p: Prediction) => p.isMine)
+      console.log('mine:', mine)
+      console.log('mine.jiku:', mine?.jiku)
+      console.log('mine.osae:', mine?.osae)
+
       setRace(data.race)
       setHorses(data.horses)
       // jiku, osaeがない場合のデフォルト値を設定
@@ -210,16 +218,23 @@ export function usePrediction(raceId: string, groupId: string | null) {
     setError(null)
 
     try {
-      const res = await fetch(apiUrl(`/api/external-races/${raceId}/predictions`), {
+      // デバッグ: 送信データを確認
+      const sendData = {
+        groupId: groupId || null,
+        ...myPrediction,
+      }
+      console.log('=== Save Prediction Debug ===')
+      console.log('sendData:', sendData)
+      console.log('sendData.jiku:', sendData.jiku)
+      console.log('sendData.osae:', sendData.osae)
+
+      const res = await fetch(apiUrl(`/api/races/${raceId}/predictions`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Token': token,
         },
-        body: JSON.stringify({
-          groupId: groupId || null,
-          ...myPrediction,
-        }),
+        body: JSON.stringify(sendData),
       })
 
       if (!res.ok) {
